@@ -1,0 +1,172 @@
+#!/bin/bash
+
+# **************************************************************************************************/
+#   ROCM-GDB Driver script
+#
+#   Copyright (c) 2015-2016 ADVANCED MICRO DEVICES, INC.  All rights reserved.
+#   This file includes code originally published under
+#
+#   Copyright (C) 1986-2014 Free Software Foundation, Inc.
+#
+#   This file is part of GDB.
+#
+#   This program is free software; you can redistribute it and/or modify
+#   it under the terms of the GNU General Public License as published by
+#   the Free Software Foundation; either version 3 of the License, or
+#   (at your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful,
+#   but WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#   GNU General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+# ****************************************************************************************************
+
+# A wrapper script to check for the environment and call amd-gdb. 
+
+# Concatenate all arguments in a single variable
+GDB_ARGS="$*"
+
+# Get the full path to the script
+SOURCE="${BASH_SOURCE[0]}"
+ROOTDIR="$( dirname "$SOURCE" )"
+# If any part of the path is a symbolic link
+# replace it with the full path
+while [ -h "$SOURCE" ]; do
+    TARGET="$( readlink "$SOURCE" )"
+    if [[ $SOURCE == /* ]]; then
+        SOURCE="$TARGET"
+    else
+        DIR="$( dirname "$SOURCE" )"
+        SOURCE="$DIR/$TARGET"
+    fi
+    if [[ $SOURCE == \.* ]]; then
+        SOURCE="$ROOTDIR/$SOURCE"
+    fi
+done
+REALPATH="$( dirname "$SOURCE" )"
+
+IPCResourceCleanup()
+{
+    # Done in case GDB didnt exit cleanly
+    ipcrm -M 4567 2> /dev/null
+    ipcrm -M 1234 2> /dev/null
+    ipcrm -M 2222 2> /dev/null
+    ipcrm -M 1111 2> /dev/null
+    
+    # The FIFO will be created in the same directory that the script is in 
+    rm -f fifo-agent-w-gdb-r 2> /dev/null
+    rm -f fifo-gdb-w-agent-r 2> /dev/null
+
+    # remove temp_source file and any other left-over files
+    rm -f temp_source 2> /dev/null
+    rm -f .temp_source* 2> /dev/null
+    rm -f temp_isa 2> /dev/null
+    rm -f .temp_isa* 2> /dev/null
+
+}
+
+IPCResourceCleanup
+
+# Enable SoftCP mode in the HSA runtime
+export HSA_EMULATE_AQL=1
+export HSA_TOOLS_LIB="libhsa-runtime-tools64.so.1 libAMDHSADebugAgent-x64.so"
+
+# Enable Finalizer's workaround to use code segment offsets for the isa line table
+export HSA_USE_OFFSETS_FOR_DWARF_CODE_ADDRESSES=1
+
+
+if [ ! -f $REALPATH/amd-gdb ]; then
+	echo amd-gdb executable not found in folder $REALPATH
+	exit -1
+fi
+
+# Add a possible path to amdhsacod
+export PATH=$PATH:'/opt/rocm/bin'
+
+# These flags will be used by libhsail
+export LIBHSAIL_OPTIONS_APPEND="-g -include-source"
+# This flag will be used by runtime to process the debug info when the brig module is added to create a program
+export PROGRAM_CREATE_OPTIONS_APPEND="-g"
+export PROGRAM_FINALIZE_OPTIONS_APPEND="-g -O0 -amd-reserved-num-vgprs=4 "
+
+# Set and export the LD_LIBRARY_PATH for gpudebugsdk
+# This assumes a specific directory structure with ROCm-gdb and gpudebugsdk folders are in the same directory
+SDK="gpudebugsdk"
+# If the user has specified the SDK path already, use that
+# otherwise look for the SDK folder relative to the rocm-gdb folder
+if [[ ! "$LD_LIBRARY_PATH" == *$SDK* ]]; then
+    for fileName in $( ls $REALPATH/../../.. ); do
+        if [[ "$fileName" == *$SDK* ]]; then
+            if [[ ! "$fileName" == *tar* ]]; then
+                export LD_LIBRARY_PATH=$REALPATH/../../../$fileName/lib/x86_64:${LD_LIBRARY_PATH}
+            fi
+        fi
+    done
+    if [[ ! "$LD_LIBRARY_PATH" == *$SDK* ]]; then
+        echo The $SDK folder cannot be found.  Please use the directory structure shown in the README and make sure the $SDK folder is specified in the LD_LIBRARY_PATH environment variable.
+        exit -1
+    fi
+fi
+
+# Remove any stale FIFO files
+if [ -p fifo-agent-w-gdb-r ]; then
+    rm -f fifo-agent-w-gdb-r
+fi
+if [ -p fifo-gdb-w-agent-r ]; then
+    rm -f fifo-gdb-w-agent-r
+fi
+
+# Define a session ID, if logging is enabled by the user
+if [ -z "$ROCM_GDB_ENABLE_LOG" ]; then
+	export ROCM_GDB_DEBUG_SESSION_ID=""
+else
+	export ROCM_GDB_DEBUG_SESSION_ID=$$
+fi
+
+# We can now call gdb
+export ROCM_ENABLE_GDB=1
+
+$REALPATH/amd-gdb -data-directory $REALPATH/data-directory -iex "add-auto-load-safe-path $REALPATH" -ix $REALPATH/.gdbinit $GDB_ARGS
+# Capture GDB's return code to send to the terminal, 
+# we are not interested in the subsequent IPC cleanup and logging return codes 
+GDB_RETURN_CODE=$?
+
+#cp $REALPATH/amd-gdb $REALPATH/gdb
+#gdb --args $REALPATH/gdb -data-directory $REALPATH/data-directory $GDB_ARGS
+#GDB_RETURN_CODE=$?
+
+#valgrind --tool=memcheck --log-file=valgrind_log $REALPATH/amd-gdb -data-directory $REALPATH/data-directory -iex "add-auto-load-safe-path $REALPATH" -ix $REALPATH/.gdbinit $GDB_ARGS
+
+
+# Steps to run after amd-gdb exits
+unset ROCM_ENABLE_GDB
+
+# If the ROCM loggging variable was not defined, remove the gdb log
+# else save it with the session id
+if [ -z "$ROCM_GDB_ENABLE_LOG" ]; then
+	rm -f gdb.txt 
+else
+	GDBLOGFILENAME=$ROCM_GDB_ENABLE_LOG"_rocm_gdb_log_"$ROCM_GDB_DEBUG_SESSION_ID
+
+	echo "GDB Log saved to " $GDBLOGFILENAME
+	mv gdb.txt $GDBLOGFILENAME 2> /dev/null
+fi
+
+# There is an issue with how we terminate gdb when we call quit
+#
+# Some internal ncurses state is getting messed up when we call the quit functionality twice in gdb
+# As a temporary workaround we use the below command
+# http://unix.stackexchange.com/questions/79684/fix-terminal-after-displaying-a-binary-file
+# This does not seem to clear the full terminal like the "reset" command and seems to have no other side effect
+#
+# If we want to clear the terminal of all previous OP, we should add "tput rs1"
+# tput and stty together seem to have the same functionality as reset
+stty sane 2> /dev/null
+
+IPCResourceCleanup
+
+# Return with GDB's return code
+exit $GDB_RETURN_CODE
