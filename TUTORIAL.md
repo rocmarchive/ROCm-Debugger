@@ -358,11 +358,12 @@ To debug GPU kernels that target ROCm, you need to compile the  kernels for debu
 
 It should be noted that the `rocm-gdb-debug-flags.sh` should be called as `source rocm-gdb-debug-flags.sh` and not executed as `./rocm-gdb-debug-flags.sh` since the script sets environment variables and the variables need to be visible for the subsequent build commands.
 
-* For HCC-HSAIL based applications, you can call `source rocm-gdb-debug-flags.sh` before compiling the application or include the environment variables in the script as part of your application's build.
 * For applications using libHSAIL to compile their GPU kernels `source rocm-gdb-debug-flags.sh` should be called when the application is compiled.
 * For SNACK applications, you can call `source rocm-gdb-debug-flags.sh` before calling the buildrun.sh script for the SNACK applications.
 
-Once the application has been built using the environment variables specified in `rocm-gdb-debug-flags.sh`, you can debug HCC-HSAIL / SNACK / libHSAIL applications  as described in this tutorial.
+Note that kernel debugging is not yet supported with applications compiled using HCC-LC.
+
+Once the application has been built using the environment variables specified in `rocm-gdb-debug-flags.sh`, you can debug libHSAIL applications  as described in this tutorial.
 
 <A NAME="GeneratingLogs">
 ### Generating logs for reporting issues in rocm-gdb

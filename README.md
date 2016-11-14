@@ -3,7 +3,7 @@
 ## Overview
 The ROCm Debugger provides a gdb-based debugging environment for debugging host application and GPU kernels running on Radeon Open Compute platforms (ROCm).
 It can support all language runtimes (such as HIP and HCC) built on top of ROCm.  Initially, the debugging support within the GPU kernels starts with the 
-HSAIL 1.0 programming language.  This support requires a kernel compilation path that goes through HSAIL kernel (such as through HCC-HSAIL or [libHSAIL/HSAILAsm](https://github.com/HSAFoundation/HSAIL-Tools)).
+HSAIL 1.0 programming language. GPU Kernel debugging requires a compilation path that goes through HSAIL kernel (such as [libHSAIL/HSAILAsm](https://github.com/HSAFoundation/HSAIL-Tools)).
 
 There are two packages included in this release:
 * ROCm gdb package that contains the rocm-gdb tool 
@@ -31,6 +31,12 @@ The ROCm Debugger extends the existing [HSA Debugger](https://github.com/HSAFoun
 * Trace GPU kernel launches into an output file
 
 <A NAME="WhatsNew">
+## What's New in Nov 2016 Release (version 1.3)
+* Compatible with [ROCm 1.3 release](https://github.com/RadeonOpenCompute/ROCm)
+* Support for AMD code object loader extension
+* Initial support for Polaris GPUs
+* Detect and gracefully fail on unsupported devices
+
 ## What's New in Aug 2016 Release (version 1.2)
 * Compatible with [ROCm 1.2 release](https://github.com/RadeonOpenCompute/ROCm)
 * Update gdb base to gdb v7.11.
