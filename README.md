@@ -119,8 +119,7 @@ First, make sure that the ROCm platform is setup correctly.
 Check out the [tutorial](TUTORIAL.md) for some usage examples.
 
 <A NAME="Known">
-## Known Issues for August 2016 Release
-* HCC applications compiled with HCC-HSAIL and offline HSAIL finalization may experience inconsistent stepping behavior. HCC applications need to be compiled with the environment variable `HCC_NOISA=1`
+## Known Issues for November 2016 Release
 * Debugging hsa code objects that contain more than one BRIG module are not supported
 * Debugging HSAIL kernels that contain global (or read only) variables are not supported
 * Debugging HSAIL kernels that contain HSAIL function calls are not supported
