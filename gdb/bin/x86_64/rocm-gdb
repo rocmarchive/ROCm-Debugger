@@ -62,11 +62,14 @@ IPCResourceCleanup()
     rm -f fifo-gdb-w-agent-r 2> /dev/null
 
     # remove temp_source file and any other left-over files
+    # Needs to be kept in sync with temp files used by the HSADebugAgent
     rm -f temp_source 2> /dev/null
     rm -f .temp_source* 2> /dev/null
     rm -f temp_isa 2> /dev/null
     rm -f .temp_isa* 2> /dev/null
     rm -f /tmp/debugger_isa_dump 2> /dev/null
+    rm -f /tmp/mangled_kernel 2> /dev/null
+    rm -f /tmp/demangled_kernel 2> /dev/null
 }
 
 IPCResourceCleanup
