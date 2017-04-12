@@ -118,7 +118,7 @@ First, make sure that the ROCm platform is setup correctly.
 ## Usage Examples
 Check out the [tutorial](TUTORIAL.md) for some usage examples.
 
-## Known Issues for December 2016 Release
+## Known Issues
 * Debugging hsa code objects that contain more than one BRIG module are not supported
 * Debugging HSAIL kernels that contain global (or read only) variables are not supported
 * Debugging HSAIL kernels that contain HSAIL function calls are not supported
