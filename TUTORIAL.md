@@ -189,7 +189,7 @@ Switching the focus to another work-item and printing *$s0* allows us to view da
 $3 = 1
 ```
 
-###How do I view the GPU ISA disassembly?
+### How do I view the GPU ISA disassembly?
 To view the GPU ISA disassembly, you can use the standard gdb *disassemble* command while gdb stops at the GPU function breakpoint or GPU kernel source breakpoint.
 
 While gdb stops at a GPU kernel source breakpoint, the program counter of the focus wave is shown with a (=>) prefix and some ISA instructions above and below the program counter are shown.
