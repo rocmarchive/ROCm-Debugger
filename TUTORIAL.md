@@ -1,30 +1,27 @@
 ## Table of Contents
-* [How do I debug my GPU application?](#HowDoIStart)
-* [How do I view the list of all ROCm gdb commands](#HelpROCm)
-* [How do I set breakpoints in my GPU application?](#HowDoISetBreakpoints)
-  * [Setting GPU function breakpoints](#SetGPUFunctionBreakpoints)
-  * [Setting GPU kernel source breakpoints](#SetGPUKernelSourceBreakpoints)
-  * [Setting conditional GPU kernel source breakpoints](#SetConditionalGPUKernelSourceBreakpoints)
-  * [Managing GPU breakpoints](#ManagingGPUBreakpoints)
-* [How do I single step in a GPU kernel?](#HowDoISingleStep)
-* [How do I print GPU registers?](#HowDoIPrintGPURegisters)
-* [How do I view the GPU ISA disassembly?](#HowDoIDisassemble)
-* [How do I view GPU dispatch info?](#HowDoIViewGPUDispatchInfo)
-* [How do I view a trace of GPU dispatches?](#HowDoITraceGPUDispatches)
-* [How do I compile GPU kernels for debug?](#HowDoICompileGPUKernelsForDebug)
-* [Generating logs for reporting Issues in rocm-gdb](#GeneratingLogs)
-* [Others](#Others)
+* [How do I debug my GPU application?](#how-do-i-debug-my-gpu-application)
+* [How do I view the list of all ROCm gdb commands?](#how-do-i-view-the-list-of-all-rocm-gdb-commands)
+* [How do I set breakpoints in my GPU application?](#how-do-i-set-breakpoints-in-my-gpu-application)
+  * [Setting GPU function breakpoints](#setting-gpu-function-breakpoints)
+  * [Setting GPU kernel source breakpoints](#setting-gpu-kernel-source-breakpoints)
+  * [Setting conditional GPU kernel source breakpoints](#setting-conditional-gpu-kernel-source-breakpoints)
+  * [Managing GPU breakpoints](#managing-gpu-breakpoints)
+* [How do I single step in a GPU kernel?](#how-do-i-single-step-in-a-gpu-kernel)
+* [How do I print GPU registers?](#how-do-i-print-gpu-registers)
+* [How do I view the GPU ISA disassembly?](#how-do-i-view-the-gpu-isa-disassembly)
+* [How do I view GPU dispatch info?](#how-do-i-view-gpu-dispatch-info)
+* [How do I view a trace of GPU dispatches?](#how-do-i-view-a-trace-of-gpu-dispatches)
+* [How do I compile GPU kernels for debug?](#how-do-i-compile-gpu-kernels-for-debug)
+* [Generating logs for reporting Issues in rocm-gdb](#generating-logs-for-reporting-issues-in-rocm-gdb)
+* [Others](#others)
 
-<A NAME="Usage">
-<A NAME="HowDoIStart">
 ### How do I debug my GPU application?
 You can start your program in rocm-gdb just like you would any application under gdb
 * `rocm-gdb MatrixMul`
 * You should now be in the gdb prompt and can start execution of the application
 * `(ROCm-gdb) start`
 
-<A NAME="HelpROCm">
-### How do I view the list of all ROCm gdb commands
+### How do I view the list of all ROCm gdb commands?
 To view the list of all rocm related gdb commands, you can type `help rocm`.
 ```
 (ROCm-gdb) help rocm
@@ -60,14 +57,12 @@ disassemble                        Show the GPU ISA disassembly text when at a G
 --------------------------------------------------------------------------
 ```
 
-<A NAME="HowDoISetBreakpoints">
 ### How do I set breakpoints in my GPU application?
 To set breakpoints in GPU kernels, rocm-gdb defines
 * **GPU kernel function breakpoint:** Similar to a gdb function breakpoint, allows you stop the application just before a **specific** GPU dispatch starts
 * **Generic GPU kernel breakpoint:** Stop the application before **any** GPU dispatch starts
 * **Source line breakpoint:** A breakpoint that is set on a particular line of GPU kernel source
 
-<A NAME="SetGPUFunctionBreakpoints">
 #### Setting GPU function breakpoints
 The gdb `break` command has been extended to `break rocm` in order to set GPU breakpoints.
 To set a specific GPU kernel function breakpoints:
@@ -84,7 +79,6 @@ To set a general GPU kernel function breakpoint, use either of the following com
 
 This will stop the application just before every dispatch begins executing on the device.
 
-<A NAME="SetGPUKernelSourceBreakpoints">
 #### Setting GPU kernel source breakpoints
 In order to break into GPU kernels, you need to set GPU source breakpoints. ROCm-gdb saves the kernel source for the present dispatch to a temporary file called *temp_source*. GPU source breakpoints can be set by specifying the line number from the *temp_source* GPU kernel source file. The *temp_source* file is overwritten by rocm-gdb on every GPU dispatch.
 
@@ -100,7 +94,6 @@ GPU breakpoint 1 (PC:0x08d0 mad_u32 $s0, $s1, $s0, $s3; temp_source@line 150)
 
 When you continue the program's execution, the application will stop when any work-item reaches line 150 in *temp_source*.
 
-<A NAME="SetConditionalGPUKernelSourceBreakpoints">
 #### Setting Conditional GPU kernel source breakpoints
 Conditional GPU breakpoints allow you to stop the application only when a particular work-item hits a breakpoint. You can set a conditional source breakpoint by specifying the a work-item using the syntax:
 * `break rocm:line_number if wg:x,y,z wi:x,y,z`
@@ -117,7 +110,6 @@ When the application is executed, the dispatch will stop when line 150 is execut
 [ROCm-gdb]: Breakpoint 2 at mad_u32 $s0, $s1, $s0, $s3; temp_source@line 150
 Stopped on GPU breakpoint
 ```
-<A NAME="ManagingGPUBreakpoints">
 #### Managing GPU breakpoints
 * You can use the same gdb commands such as `info bre` to view information about the active GPU and host breakpoints
 The command `info bre` shows multiple GPU kernel source breakpoints, an GPU function breakpoint and a host breakpoint
@@ -135,8 +127,7 @@ breakpoint already hit 320 times
 
 * You can also delete GPU breakpoints using the same command as GDB's host breakpoints `del breakpoint_number`
 
-<A NAME="HowDoISingleStep">
-### How do I single step in  a GPU kernel?
+### How do I single step in a GPU kernel?
 You can single step in a GPU dispatch using the conventional `step` command.
 Only a single step is supported at a time.
 
@@ -175,7 +166,6 @@ Stopped on GPU breakpoint
 Continuing.
 ```
 
-<A NAME="HowDoIPrintGPURegisters">
 ### How do I print GPU registers?
 To print registers in a GPU kernel, the gdb `print` command has been extended. To print GPU registers.
 * `print rocm:$register_name`
@@ -199,7 +189,6 @@ Switching the focus to another work-item and printing *$s0* allows us to view da
 $3 = 1
 ```
 
-<A NAME="HowDoIDisassemble">
 ###How do I view the GPU ISA disassembly?
 To view the GPU ISA disassembly, you can use the standard gdb *disassemble* command while gdb stops at the GPU function breakpoint or GPU kernel source breakpoint.
 
@@ -267,7 +256,6 @@ This can be enabled using the `set rocm show-isa` as shown below.
 
 With this option, ROCm-gdb saves the ISA for the active kernel to *temp_isa* whenever a GPU kernel is active.
 
-<A NAME="HowDoIViewGPUDispatchInfo">
 ### How do I view GPU dispatch info?
 The `info` command has been extended to `info rocm`.
 The `info rocm` command allows you to view the present state of the GPU dispatch and also allows you to view information about the GPU dispatches that have executed over the lifetime of the application.
@@ -326,7 +314,6 @@ Index     Wave ID {SE,SH,CU,SIMD,Wave}            Work-item ID        Abs Work-i
    *0  0x408002d0 { 0, 0, 2,   1,   0}               [0, 0, 0]              [16, 0, 0]      0x68    temp_source@line 150
 ```
 
-<A NAME="HowDoITraceGPUDispatches">
 ## How do I view a trace of GPU dispatches
 ROCm-gdb helps developers to view information about kernels that have been launched on the GPU using the rocm trace commands.
 ROCm-gdb can save a trace of all the GPU kernel launches to a Comma Separated Value (CSV) file using the `set rocm trace` command.  The following commands enable tracing GPU kernel launches to `mytrace.csv`.
@@ -352,7 +339,6 @@ You can now execute and debug the application within ROCm-gdb. Anytime during th
 | 9 | 380095252 | 9 | &__OpenCL_matrixMul_kernel | 5122 | 2 | {16 16 1} | 0 | {128 80 1} | 0 | 0 | 140737353967104 | 0x708000 | 0 | 7081216 |
 
 
-<A NAME="HowDoICompileGPUKernelsForDebug">
 ### How do I compile GPU kernels for debug?
 To debug GPU kernels that target ROCm, you need to compile the  kernels for debug and embed the HSAIL kernel source in the resulting code object. Debug flags can be passed to high level compiler and the finalizer using environment variables. To simplify this process, the `rocm-gdb-debug-flags.sh` script is included in the `/opt/rocm/gpudebugsdk/bin` directory.
 
@@ -365,7 +351,6 @@ Note that kernel debugging is not yet supported with applications compiled using
 
 Once the application has been built using the environment variables specified in `rocm-gdb-debug-flags.sh`, you can debug libHSAIL applications  as described in this tutorial.
 
-<A NAME="GeneratingLogs">
 ### Generating logs for reporting issues in rocm-gdb
 Additional log files can be generated by rocm-gdb. These log files should be sent to the rocm-gdb developers to allow them to diagnose issues.
 Logging is enabled with the `ROCM_GDB_ENABLE_LOG` environment variable as shown below
@@ -379,6 +364,5 @@ The environment variable enables logging and provides a prefix for the log file 
 As the `MatrixMul` application executes, log files with the prefix `DebugLogs_` will be generated.
 The log files generated include logs from GDB, the HSA Debug Agent and the HSA code objects used in the applications. Each debug session's log file's name will include a unique `SessionID`.
 
-<A NAME="Others">
 ### Others
 A useful tutorial on how to use GDB can be found on [RMS's site](http://www.unknownroad.com/rtfm/gdbtut/).
