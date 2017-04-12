@@ -13,16 +13,15 @@ There are two packages included in this release:
 The ROCm Debugger extends the existing [HSA Debugger](https://github.com/HSAFoundation/HSA-Debugger-AMD) with new features for ROCm .
 
 ## Table of Contents
-* [Major Features](#Major)
-* [What's New](#WhatsNew)
-* [System Requirements](#System)
-* [Package Contents](#Package)
-* [Installation](#Installation)
+* [Major Features](#major-features)
+* [What's New](#whats-new)
+* [System Requirements](#system-requirements)
+* [Package Contents](#package-contents)
+* [Installation](#installation)
 * [Usage Examples](TUTORIAL.md)
-* [Known Issues](#Known)
+* [Known Issues](#known-issues)
 * [ROCm GDB LICENSE](gdb/LICENSE.txt) and [SDK LICENSE](gpudebugsdk/LICENSE.txt)
 
-<A NAME="Major">
 ## Major Features
 * Seamless host application and GPU kernel source debugging using a familiar gdb-based debugging environment on ROCm
 * Set GPU kernel breakpoints, single stepping and inspect registers within HSAIL kernel source
@@ -30,7 +29,6 @@ The ROCm Debugger extends the existing [HSA Debugger](https://github.com/HSAFoun
 * Disassemble GPU kernel at GPU kernel function and source breakpoint
 * Trace GPU kernel launches into an output file
 
-<A NAME="WhatsNew">
 ## What's New in Dec 2016 Release (version 1.4)
 * Compatible with [ROCm 1.4 release](https://github.com/RadeonOpenCompute/ROCm)
 * Support for demangling kernel names of HIP and HCC kernels (requires *clang_tot_upgrade* branch of HCC). Also requires c++filt to be intalled on the system. c++filt can be installed using *sudo apt-get install binutils*
@@ -58,7 +56,6 @@ The ROCm Debugger extends the existing [HSA Debugger](https://github.com/HSAFoun
 * Add gdb *help rocm* command to show the list of rocm debugging related commands
 * Add support to report the hardware slot scheduling information for wavefronts
 
-<A NAME="System">
 ## System Requirements
 * Boltzmann system
   * CPU: CPUs with PCIe Gen3 Atomics: Haswell-class Intel(c) Core CPUs v3 or newer and Intel Xeon E5 v3 or newer.
@@ -70,7 +67,6 @@ The ROCm Debugger extends the existing [HSA Debugger](https://github.com/HSAFoun
 
 To debug within a GPU kernel, the GPU kernel must be assembled using the latest [LibHSAIL/HSAILAsm](https://github.com/HSAFoundation/HSAIL-Tools) (from April 4th 2016 or newer) built with *BUILD_WITH_LIBBRIGDWARF=1*.
 
-<A NAME="Package">
 ## Package Contents
 The directory structure of the ROCm Debugger packages:
 * *gpudebugsdk*
@@ -96,7 +92,6 @@ The directory structure of the ROCm Debugger packages:
   
 If you download the ROCm Debugger packages or files separately, you must create the same directory structure as shown above in order to run rocm-gdb successfully.
   
-<A NAME="Installation">
 ## Installation
 First, make sure that the ROCm platform is setup correctly.
 * [Install ROCm](https://github.com/RadeonOpenCompute/ROCm#installing-from-amd-rocm-repositories)
@@ -123,7 +118,6 @@ First, make sure that the ROCm platform is setup correctly.
 ## Usage Examples
 Check out the [tutorial](TUTORIAL.md) for some usage examples.
 
-<A NAME="Known">
 ## Known Issues for December 2016 Release
 * Debugging hsa code objects that contain more than one BRIG module are not supported
 * Debugging HSAIL kernels that contain global (or read only) variables are not supported
