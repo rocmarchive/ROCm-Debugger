@@ -130,17 +130,26 @@ else
 	export ROCM_GDB_DEBUG_SESSION_ID=$$
 fi
 
+export GDB_RETURN_CODE=1
+
 # We can now call gdb
 export ROCM_ENABLE_GDB=1
 
-$REALPATH/amd-gdb -data-directory $REALPATH/data-directory -iex "add-auto-load-safe-path $REALPATH" -ix $REALPATH/.gdbinit $GDB_ARGS
-# Capture GDB's return code to send to the terminal, 
-# we are not interested in the subsequent IPC cleanup and logging return codes 
-GDB_RETURN_CODE=$?
+# The ROCM_GDB_ENABLE_SELF_DEBUG will launch rocm-gdb within the system's gdb.
+# Used only for GDB development and testing.
+if [ -z "$ROCM_GDB_ENABLE_SELF_DEBUG" ]; then
+	$REALPATH/amd-gdb -data-directory $REALPATH/data-directory -iex "add-auto-load-safe-path $REALPATH" -ix $REALPATH/.gdbinit $GDB_ARGS
+	# Capture GDB's return code to send to the terminal, 
+	# we are not interested in the subsequent IPC cleanup and logging return codes 
+	GDB_RETURN_CODE=$?
+else
+	cp $REALPATH/amd-gdb $REALPATH/gdb
+	gdb --args $REALPATH/gdb -data-directory $REALPATH/data-directory $GDB_ARGS
+	GDB_RETURN_CODE=$?
+fi
 
-#cp $REALPATH/amd-gdb $REALPATH/gdb
-#gdb --args $REALPATH/gdb -data-directory $REALPATH/data-directory $GDB_ARGS
-#GDB_RETURN_CODE=$?
+
+
 
 #valgrind --tool=memcheck --log-file=valgrind_log $REALPATH/amd-gdb -data-directory $REALPATH/data-directory -iex "add-auto-load-safe-path $REALPATH" -ix $REALPATH/.gdbinit $GDB_ARGS
 

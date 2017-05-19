@@ -80,7 +80,7 @@ extern "C" {
 /** The AMD GPU Debug API minor version. */
 #define AMDGPUDEBUG_VERSION_MINOR 4
 /** The AMD GPU Debug API build number. */
-#define AMDGPUDEBUG_VERSION_BUILD 43
+#define AMDGPUDEBUG_VERSION_BUILD 194
 
 /** The maximum number of lanes in a wavefront for the GPU device. */
 #define HWDBG_WAVEFRONT_SIZE 64

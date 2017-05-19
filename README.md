@@ -29,6 +29,11 @@ The ROCm Debugger extends the existing [HSA Debugger](https://github.com/HSAFoun
 * Disassemble GPU kernel at GPU kernel function and source breakpoint
 * Trace GPU kernel launches into an output file
 
+## What's New in May 2017 Release (version 1.5)
+* Compatible with [ROCm 1.5 release](https://github.com/RadeonOpenCompute/ROCm)
+* Added the *info rocm devices* command to show the available devices in the system
+
+
 ## What's New in Dec 2016 Release (version 1.4)
 * Compatible with [ROCm 1.4 release](https://github.com/RadeonOpenCompute/ROCm)
 * Support for demangling kernel names of HIP and HCC kernels (requires *clang_tot_upgrade* branch of HCC). Also requires c++filt to be intalled on the system. c++filt can be installed using *sudo apt-get install binutils*

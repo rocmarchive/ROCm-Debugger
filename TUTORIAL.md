@@ -36,6 +36,7 @@ break rocm:<kernel_name>           Break when kernel <kernel_name> is about to b
 break rocm:<line_number>           Break when execution hits line <line_number> in temp_source
 --------------------------------------------------------------------------
 ROCm info commands:
+info rocm devices 		   Print all available GPU devices
 info rocm kernels                  Print all GPU kernel dispatches
 info rocm kernel <kernel_name>     Print all GPU kernel dispatches with a specific <kernel_name>
 info rocm [work-groups|wgs]        Print all GPU work-group items
@@ -312,6 +313,15 @@ The `info rocm work-item` command will show the focus work-item for the active d
 Information for Work-item
 Index     Wave ID {SE,SH,CU,SIMD,Wave}            Work-item ID        Abs Work-item ID        PC            Source line
    *0  0x408002d0 { 0, 0, 2,   1,   0}               [0, 0, 0]              [16, 0, 0]      0x68    temp_source@line 150
+```
+
+The `info rocm devices` command will show the available ROCm devices in the system and the device presently executing a dispatch.
+
+```
+(ROCm-gdb) info rocm  devices
+Devices info
+Index                          Name      ChipID         CUs    Waves/CU  EngineFreq  MemoryFreq
+   *0                    AMD gfx803      0x7300          64          40        1000         500
 ```
 
 ## How do I view a trace of GPU dispatches
