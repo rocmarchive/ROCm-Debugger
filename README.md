@@ -1,4 +1,6 @@
-# ROCm Debugger
+# ROCm Debugger - Deprecated Project
+## This ROCm Debugger is a Deprecated project.
+As of 2018, this is a deprecated software project. The ROCm software team is working on a new GDB-based debugger that works with the ROCr Debug Agent to support debugging GPU kernels.
 
 ## Overview
 The ROCm Debugger provides a gdb-based debugging environment for debugging host application and GPU kernels running on Radeon Open Compute platforms (ROCm).
